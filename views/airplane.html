@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-box {
+            width: 500px;
+            height: 700px;
+            margin: 30px auto;
+            border: 1px solid #000000;
+            background: url("../public/images/background_1.png");
+            overflow: hidden;
+            position: relative;
+        }
+
+        .main-box .begin {
+            background: url("../public/images/background_1.png");
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            position: relative;
+            display: none;
+        }
+
+        .begin .start {
+            width: 250px;
+            height: 70px;
+            position: absolute;
+            top: 350px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid #6c6c6c;
+            border-radius: 15px;
+            font-size: 40px;
+            font-weight: bold;
+            outline: none;
+        }
+
+        .over-screen {
+            width: 500px;
+            height: 700px;
+            background-color: rgba(0, 0, 0,0.7);
+            display: none;
+            z-index: 10;
+        }
+
+        .over-screen .over {
+            text-align: center;
+            line-height: 300px;
+            font-size: 50px;
+            width: 300px;
+            height: 300px;
+            background-color: #fff;
+            margin: auto auto;
+            color: #2b542c;
+        }
+    </style>
+</head>
+<body>
+<div class="main-box">
+    <div class="begin">
+        <button class="start">开始游戏</button>
+    </div>
+    <div class="over-screen">
+        <div class="over">game over</div>
+    </div>
+</div>
+<script>
+    //游戏区域
+    let main = document.getElementsByClassName('main-box')[0];
+    let over = document.getElementsByClassName('over-screen')[0];
+    //敌方小飞机数组
+    let smallPlanes = [];
+    //子弹数组
+    let bullets = [];
+    //定时器
+    //创建敌方飞机
+    let timer1,
+        //敌方飞机移动
+        timer2,
+        //我方飞机移动
+        timer3,
+        //子弹移动
+        timer4,
+        //子弹发出的时间
+        timer5,
+        timer6,
+        timer7;
+
+
+    //我方飞机移动监听按钮
+    let leftBtn = false,
+        rightBtn = false,
+        topBtn = false,
+        downBtn = false,
+        space = false;
+
+
+    //1.敌方小飞机初始化
+    /*
+    * 属性：图片节点，x轴，y轴
+    * 方法：移动，图片src，坐标
+    * */
+    function SmallPlane(imgSrc, x, y, speed,times,type) {
+        this.imgNode = document.createElement('img');
+        this.imgSrc = imgSrc;
+        this.x = x;
+        this.y = y;
+        this.speed = speed;
+        this.times = times;
+        this.type = type;
+        this.init = function () {
+            this.imgNode.src = imgSrc;
+            this.imgNode.style.position = 'absolute';
+            this.imgNode.style.left = this.x + 'px';
+            this.imgNode.style.top = this.y + 'px';
+            main.appendChild(this.imgNode);
+        };
+        this.init();
+
+        this.move = function () {
+            this.imgNode.style.top = parseInt(this.imgNode.style.top) + this.speed + 'px';
+        };
+    }
+
+    //创建敌方飞机
+    function createSmallPlane() {
+        timer1 = setInterval(function () {
+            let smallPlane = new SmallPlane("../public/images/enemy1_fly_1.png", parseInt(Math.random() * 466), parseInt(Math.random() * (-40)), parseInt(Math.random() * 10) + 1,1,1);
+            smallPlanes.push(smallPlane);
+        }, 500);
+        timer6 = setInterval(function () {
+            let smallPlane = new SmallPlane("../public/images/enemy3_fly_1.png", parseInt(Math.random() * 454), parseInt(Math.random() * (-60)), parseInt(Math.random() * 7) + 1,3,2);
+            smallPlanes.push(smallPlane);
+        }, 1500);
+        timer7 = setInterval(function () {
+            let smallPlane = new SmallPlane("../public/images/enemy2_fly_1.png", parseInt(Math.random() * 390), parseInt(Math.random() * (-164)), parseInt(Math.random() * 5) + 1,5,3);
+            smallPlanes.push(smallPlane);
+        }, 3000);
+        //敌方飞机移动和超出范围时移除
+        timer2 = setInterval(function smallPlaneMove() {
+            for (let i = 0; i < smallPlanes.length; i++) {
+                smallPlanes[i].move();
+                if (parseInt(smallPlanes[i].imgNode.style.top) > 700) {
+                    main.removeChild(smallPlanes[i].imgNode);
+                    smallPlanes.splice(i, 1);
+                }
+            }
+        }, 60)
+    }
+
+    createSmallPlane();
+
+    //初始化创建我方飞机
+    /*
+    * 属性：图片节点，x轴，y轴，速度
+    * 方法：我方飞机初始化，发射子弹，上下左右移动
+    * */
+    function MyPlane(imgSrc, x, y, speed) {
+        SmallPlane.call(this, imgSrc, x, y, speed);
+        this.moveRight = function () {
+            if (parseInt(this.imgNode.style.left) >= 434) {
+                this.imgNode.style.left = 434 + 'px'
+            } else {
+                this.imgNode.style.left = parseInt(this.imgNode.style.left) + speed + 'px';
+            }
+        };
+        this.moveLeft = function () {
+            if (parseInt(this.imgNode.style.left) <= 0) {
+                this.imgNode.style.left = 0 + 'px'
+            } else {
+                this.imgNode.style.left = parseInt(this.imgNode.style.left) - speed + 'px';
+            }
+        };
+        this.moveTop = function () {
+            if (parseInt(this.imgNode.style.top) <= 0) {
+                this.imgNode.style.top = 0 + 'px'
+            } else {
+                this.imgNode.style.top = parseInt(this.imgNode.style.top) - speed + 'px';
+            }
+        };
+        this.moveDown = function () {
+            if (parseInt(this.imgNode.style.top) >= 620) {
+                this.imgNode.style.top = 620 + 'px'
+            } else {
+                this.imgNode.style.top = parseInt(this.imgNode.style.top) + speed + 'px';
+            }
+        };
+        // 创建子弹
+        this.shoot = function createBullet() {
+            let bullet = new Bullet('../public/images/bullet1.png', parseInt(myPlane.imgNode.style.left) + 30, parseInt(myPlane.imgNode.style.top) - 28, 20);
+            bullets.push(bullet);
+            bulletMove();
+        }
+    }
+
+    //创建我方飞机
+    let myPlane = new MyPlane('../public/images/myplane.gif', 200, 620, 8);
+
+    document.onkeydown = function (e) {
+        if (e.code === 'ArrowRight') {
+            rightBtn = true;
+        }
+        if (e.code === 'ArrowLeft') {
+            leftBtn = true;
+        }
+        if (e.code === 'ArrowUp') {
+            topBtn = true;
+        }
+        if (e.code === 'ArrowDown') {
+            downBtn = true;
+        }
+        if (e.code === 'Space') {
+            space = true;
+        }
+    };
+    document.onkeyup = function (e) {
+        if (e.code === 'ArrowRight') {
+            rightBtn = false;
+        }
+        if (e.code === 'ArrowLeft') {
+            leftBtn = false;
+        }
+        if (e.code === 'ArrowUp') {
+            topBtn = false;
+        }
+        if (e.code === 'ArrowDown') {
+            downBtn = false;
+        }
+        if (e.code === 'Space') {
+            space = false;
+        }
+    };
+    //监听按钮是否为true，控制我方飞机移动，
+    timer3 = setInterval(function () {
+        if (rightBtn === true) {
+            myPlane.moveRight();
+        }
+        if (leftBtn === true) {
+            myPlane.moveLeft();
+        }
+        if (topBtn === true) {
+            myPlane.moveTop();
+        }
+        if (downBtn === true) {
+            myPlane.moveDown();
+        }
+        myPlaneBoom()
+    }, 30);
+
+    timer5 = setInterval(function () {
+        if (space === true) {
+            myPlane.shoot();
+        }
+    }, 150);
+
+
+    //初始化子弹
+    /*
+    * 坐标，x,y,
+    * */
+    function Bullet(imgSrc, x, y, speed) {
+        SmallPlane.call(this, imgSrc, x, y, speed);
+        this.move = function () {
+            this.imgNode.style.top = parseInt(this.imgNode.style.top) - speed + 'px';
+        }
+    }
+
+    //子弹移动
+    function bulletMove() {
+        clearInterval(timer4)
+        timer4 = setInterval(function () {
+            for (let j = 0; j < bullets.length; j++) {
+                bullets[j].move();
+                if (parseInt(bullets[j].imgNode.style.top) < 0) {
+                    main.removeChild(bullets[j].imgNode);
+                    bullets.splice(j, 1)
+                } else if (parseInt(bullets[j].imgNode.style.top) > 0 && parseInt(bullets[j].imgNode.style.top) < 620) {
+                    smallBoom(bullets[j], j)
+                } else {
+                    bullets[j].move();
+                }
+            }
+        }, 30);
+    }
+
+    function smallBoom(bullet, index) {
+        for (let n = 0; n < smallPlanes.length; n++) {
+            let by = parseInt(bullet.imgNode.offsetTop);
+            let bx = parseInt(bullet.imgNode.offsetLeft);
+            let sy = parseInt(smallPlanes[n].imgNode.offsetTop);
+            let sx = parseInt(smallPlanes[n].imgNode.offsetLeft);
+            let w = smallPlanes[n].imgNode.offsetWidth;
+            let h = smallPlanes[n].imgNode.offsetHeight;
+            if (by > sy && by < (sy + h) && bx > sx && bx < (sx + w)) {
+                smallPlanes[n].times--;
+                main.removeChild(bullet.imgNode);
+                bullets.splice(index, 1);
+                if (smallPlanes[n].type === 1 && smallPlanes[n].times === 0){
+                    smallPlanes[n].imgNode.src = '../public/images/小飞机爆炸.gif';
+                    deletePlane(n)
+                }else if (smallPlanes[n].type === 2 && smallPlanes[n].times === 0){
+                    smallPlanes[n].imgNode.src = '../public/images/中飞机爆炸.gif';
+                    deletePlane(n)
+                }else if(smallPlanes[n].type === 3 && smallPlanes[n].times === 0){
+                    smallPlanes[n].imgNode.src = '../public/images/大飞机爆炸.gif';
+                    deletePlane(n)
+                }
+            }
+        }
+    }
+
+    function deletePlane(i) {
+        (function (imgNode) {
+            setTimeout(function () {
+                main.removeChild(imgNode);
+            }, 500);
+        }(smallPlanes[i].imgNode));
+        smallPlanes.splice(i, 1);
+    }
+
+    function myPlaneBoom() {
+        let My = parseInt(myPlane.imgNode.offsetTop);
+        let Mx = parseInt(myPlane.imgNode.offsetLeft);
+        let myPW = parseInt(myPlane.imgNode.offsetWidth);
+        let myPH = parseInt(myPlane.imgNode.offsetHeight);
+        for (let m = 0;m<smallPlanes.length;m++){
+            let sx = parseInt(smallPlanes[m].imgNode.offsetLeft);
+            let sw = parseInt(smallPlanes[m].imgNode.offsetWidth);
+            let sh = parseInt(smallPlanes[m].imgNode.offsetHeight);
+            let sy = parseInt(smallPlanes[m].imgNode.offsetTop);
+            if ((sx+sw)>Mx && sx<(Mx+myPW) && (sy+sh)>My && sy<(My+myPH)){
+                myPlane.imgNode.src = '../public/images/本方飞机爆炸.gif';
+                clearInterval(timer1);
+                clearInterval(timer2);
+                clearInterval(timer3);
+                clearInterval(timer5);
+                clearInterval(timer6);
+                clearInterval(timer7);
+                gameOver();
+            }
+        }
+    }
+    function gameOver() {
+        setTimeout(function () {
+            for (let i = 0;i<smallPlanes.length;i++){
+                main.removeChild(smallPlanes[i].imgNode)
+            }
+            main.removeChild(myPlane.imgNode);
+            over.style.display = 'block'
+        },1500)
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 320px;
+    height: 480px;
+    margin: 50px auto;
+    position: relative;
+}
+
+.container > h1 {
+    color: white;
+    margin-left: 60px;
+}
+
+.container > .progress {
+    width: 180px;
+    height: 16px;
+    position: absolute;
+    top: 66px;
+    left: 63px;
+}
+
+.container > .start {
+    width: 150px;
+    line-height: 35px;
+    text-align: center;
+    color: white;
+    background: linear-gradient(#E55C3D, #C50000);
+    border-radius: 20px;
+    border: none;
+    font-size: 20px;
+    position: absolute;
+    top: 320px;
+    left: 50%;
+    margin-left: -75px;
+}
+
+.container > .rules {
+    width: 100%;
+    height: 20px;
+    background: #ccc;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    text-align: center;
+}
+
+.container > .rule {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding-top: 100px;
+    box-sizing: border-box;
+    text-align: center;
+    display: none;
+}
+
+.container > .historyScore {
+    width: 100px;
+    height: 20px;
+    position: absolute;
+    top: 0;
+    right: -100px;
+    background-color: #a41111;
+}
+
+.container > .historyScore span:hover {
+    color: #fff;
+}
+
+.container > .historyScore ul {
+    list-style: none;
+    width: 200px;
+    height: 105px;
+    box-sizing: border-box;
+    border: 1px solid #666666;
+    display: none;
+}
+
+.container > .historyScore li {
+    height: 20px;
+    width: 197px;
+    background-color: #fff;
+    border-bottom: 1px solid #666666;
+}
+
+.rule > p {
+    line-height: 50px;
+    color: white;
+}
+
+.rule > a {
+    color: red;
+}
+
+.container > .mask {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding-top: 200px;
+    box-sizing: border-box;
+    text-align: center;
+    display: none;
+}
+
+.mask > h1 {
+    color: #ff4500;
+    text-shadow: 3px 3px 0 #fff;
+    font-size: 40px;
+}
+
+.mask > button {
+    width: 150px;
+    line-height: 35px;
+    text-align: center;
+    color: white;
+    background: linear-gradient(#74ACCF, #007DDC);
+    border-radius: 20px;
+    border: none;
+    font-size: 20px;
+    position: absolute;
+    top: 320px;
+    left: 50%;
+    margin-left: -75px;
+}

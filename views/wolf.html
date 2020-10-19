@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>狂拍灰太狼</title>
+    <link rel="stylesheet" href="../public/css/wolf.css">
+    <script src="../public/jquery-1.12.2.js"></script>
+    <script src="../public/js/wolf.js"></script>
+</head>
+<body>
+<div class="container" style="background: url('../public/images/game_bg.jpg')">
+    <h1 class="score">0</h1>
+    <div class="progress" style="background: url('../public/images/progress.png')"></div>
+    <button class="start" type="submit">开始游戏</button>
+    <div class="rules">游戏规则</div>
+    <div class="historyScore"><span>历史记录 >></span>
+        <ul>
+            {{if ret.length >= 5}}
+                <% for(var i = ret.length-1 ; i >= ret.length - 5 ; i--) { %>
+                    <li>score:{{ret[i].score}}</li>
+                <% } %>
+            {{/if}}
+        </ul>
+
+    </div>
+
+    <div class="rule">
+        <p>游戏规则:</p>
+        <p>1.游戏时间:60s</p>
+        <p>2.拼手速,殴打灰太狼+10分</p>
+        <p>3.殴打小灰灰-10分</p>
+        <a href="#" class="close">[关闭]</a>
+    </div>
+    <div class="mask">
+        <h1>GAME OVER</h1>
+        <button class="reStart">重新开始</button>
+    </div>
+</div>
+</body>
+</html>
